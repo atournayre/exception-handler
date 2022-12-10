@@ -1,0 +1,21 @@
+{
+    "name": "atournayre/exception-handler",
+    "description": "Centralized exception handling with Symfony and custom PHP attributes",
+    "type": "library",
+    "require": {
+        "php": ">=8.1",
+        "symfony/http-foundation": "^5.4"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Atournayre\\Component\\ExceptionHandler\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Aurélien Tournayre",
+            "email": "aurelien.tournayre@gmail.com"
+        }
+    ]
+}
