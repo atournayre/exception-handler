@@ -27,11 +27,11 @@ class ExceptionHandler implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            KernelEvents::EXCEPTION => 'handleException',
+            KernelEvents::EXCEPTION => 'onKernelException',
         ];
     }
 
-    public function handleException(ExceptionEvent $event): void
+    public function onKernelException(ExceptionEvent $event): void
     {
         $exception = $event->getThrowable();
 
