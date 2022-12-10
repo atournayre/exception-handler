@@ -2,6 +2,7 @@
 
 namespace Atournayre\Component\ExceptionHandler\Attributes;
 
+use Atournayre\Component\ExceptionHandler\Contracts\StatusCodeProvider;
 use Symfony\Component\HttpFoundation\Response;
 
 #[\Attribute(\Attribute::TARGET_CLASS)]
