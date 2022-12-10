@@ -6,6 +6,7 @@ use Atournayre\Component\ExceptionHandler\Contracts\StatusCodeProvider;
 use ReflectionAttribute;
 use ReflectionClass;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpFoundation\Exception\SessionNotFoundException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -124,7 +125,11 @@ class ExceptionHandler implements EventSubscriberInterface
     {
         $exception = $event->getThrowable();
 
-        $this->requestStack->getSession()->getFlashBag()->add('error', $exception->getMessage());
+        try {
+            $this->requestStack->getSession()
+                ->getFlashBag()
+                ->add('error', $exception->getMessage());
+        } catch (SessionNotFoundException $exception) {}
 
         $route = $event->getRequest()->get('_route');
         $routeParameters = $event->getRequest()->get('_route_params');
