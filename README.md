@@ -1,6 +1,6 @@
-# Exception Handler Component
+# Exception Handler Component for Symfony
 
-This component helps handle exceptions.
+This component helps handle exceptions inside Symfony.
 
 It is inspired from the article [Centralized exception handling with Symfony and custom PHP attributes
 ](https://angelovdejan.me/2022/11/24/centralized-exception-handling-with-symfony-and-custom-php-attributes.html) by [Dejan Angelov](https://github.com/angelov). Read it before!
