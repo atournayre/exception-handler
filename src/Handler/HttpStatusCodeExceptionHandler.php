@@ -2,9 +2,9 @@
 
 namespace Atournayre\Component\ExceptionHandler\Handler;
 
+use Atournayre\Component\ExceptionHandler\Contracts\AttributeReaderInterface;
 use Atournayre\Component\ExceptionHandler\Contracts\StatusCodeProvider;
-use ReflectionAttribute;
-use ReflectionClass;
+use Atournayre\Component\ExceptionHandler\Reader\AttributeReader;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Exception\SessionNotFoundException;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -16,11 +16,12 @@ use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Routing\RouterInterface;
 use Throwable;
 
-class ExceptionHandler implements EventSubscriberInterface
+class HttpStatusCodeExceptionHandler implements EventSubscriberInterface
 {
     public function __construct(
         private readonly RequestStack $requestStack,
         private readonly RouterInterface $router,
+        private readonly AttributeReaderInterface $attributeReader = new AttributeReader,
     )
     {
     }
@@ -36,38 +37,16 @@ class ExceptionHandler implements EventSubscriberInterface
     {
         $exception = $event->getThrowable();
 
-        if (!$this->supportedException($exception)) {
+        if (!$this->hasAttribute($exception)) {
             return;
         }
 
         $this->setResponse($event);
     }
 
-    private function supportedException(Throwable $exception): bool
+    private function hasAttribute(Throwable $exception): bool
     {
-        return $this->getAttribute($exception) !== null;
-    }
-
-    private function getAttribute(Throwable $exception): ?StatusCodeProvider
-    {
-        $reflectionClass = new ReflectionClass($exception);
-        $attributes = $reflectionClass->getAttributes();
-
-        $instances = array_map(
-            fn(ReflectionAttribute $attribute) => $attribute->newInstance(),
-            $attributes
-        );
-
-        $supported = array_filter(
-            $instances,
-            fn(object $attribute) => $attribute instanceof StatusCodeProvider
-        );
-
-        if (count($supported) === 0) {
-            return null;
-        }
-
-        return $supported[array_key_first($supported)];
+        return $this->attributeReader->has($exception, StatusCodeProvider::class);
     }
 
     private function setResponse(ExceptionEvent $event)
@@ -109,7 +88,7 @@ class ExceptionHandler implements EventSubscriberInterface
     private function setResponseForJson(ExceptionEvent $event)
     {
         $exception = $event->getThrowable();
-        $attribute = $this->getAttribute($exception);
+        $attribute = $this->attributeReader->get($exception, StatusCodeProvider::class);
 
         $response = new JsonResponse(
             [
