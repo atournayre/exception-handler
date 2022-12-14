@@ -13,16 +13,16 @@ composer require atournayre/exception-handler
 
 ### Usage
 
-1. Define `ExceptionHandler` as a listener in your application.
+1. Define `HttpStatusCodeExceptionHandler` as a listener in your application.
 2. Declare attributes on your existing/new exceptions classes.
 3. Remove (or do not catch exception) in your controller.
 4. It works!
 
-#### Define `ExceptionHandler` as a listener in your application
+#### Define `HttpStatusCodeExceptionHandler` as a listener in your application
 ```yaml
 # config/services.yaml
 services:
-  Atournayre\Component\ExceptionHandler\Handler\ExceptionHandler:
+  Atournayre\Component\ExceptionHandler\Handler\HttpStatusCodeExceptionHandler:
     tags:
       - { name: kernel.event_listener, event: kernel.exception }
 ```
