@@ -3,10 +3,11 @@
 namespace Atournayre\Component\ExceptionHandler\Reader;
 
 use Atournayre\Component\ExceptionHandler\Contracts\AttributeReaderInterface;
+use Atournayre\Component\ExceptionHandler\Contracts\StatusCodeProvider;
 
 class AttributeReader implements AttributeReaderInterface
 {
-    public function has(object $object, string $fqdn): bool
+    private function getSupported(object $object, string $fqdn): array
     {
         $reflectionClass = new \ReflectionClass($object);
         $attributes = $reflectionClass->getAttributes();
@@ -16,11 +17,26 @@ class AttributeReader implements AttributeReaderInterface
             $attributes
         );
 
-        $supported = array_filter(
+        return array_filter(
             $instances,
             fn(object $attribute) => $attribute instanceof $fqdn
         );
+    }
 
+    public function has(object $object, string $fqdn): bool
+    {
+        $supported = $this->getSupported($object, $fqdn);
         return $supported !== [];
+    }
+
+    public function get(object $object, string $fqdn): mixed
+    {
+        $supported = $this->getSupported($object, $fqdn);
+
+        if ($supported == []) {
+            return null;
+        }
+
+        return $supported[array_key_first($supported)];
     }
 }
